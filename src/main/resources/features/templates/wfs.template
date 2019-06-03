@@ -1,0 +1,74 @@
+
+@wfs_image_search
+Feature: SearchWFSService
+
+  Scenario: [WFS-01] system calls WFS GetCapabilities
+    When WFS GetCapabilities call is made
+    Then the system returns a GetCapabilites statement that matches the expected WFSGetCapabilites output
+
+  Scenario: [WFS-02] WFS call to search for an image by ImageID
+    When a WFS call is made to search for the image ${files[0].imageId}
+    Then the WFS call returns a feature for the image ${files[0].imageId}
+
+  Scenario: [WFS-03] WFS call to search for an image by specifying a bounding box
+    When a WFS call is made to search for an image specifying a bounding box ${files[0].bbox}
+    Then the WFS call returns a feature for the image ${files[0].imageId}
+
+  Scenario: [WFS-04] WFS call to search for an image by specifying a bounding polygon
+    When a WFS call is made to search for an image specifying a bounding polygon ${files[0].polygon}
+    Then the WFS call returns a feature for the image ${files[0].imageId}
+
+  Scenario: [WFS-05] WFS call to search for an image by specifying a single point
+    When a WFS call is made to search for an image specifying a single point ${files[0].point}
+    Then the WFS call returns a feature for the image ${files[0].imageId}
+
+  Scenario: [WFS-06] WFS call to search for an image by specifying a point and radius
+    When a WFS call is made to search for an image specifying a point and radius ${files[0].point}, ${files[0].radius}
+    Then the WFS call returns a feature for the image ${files[0].imageId}
+
+  Scenario: [WFS-07] WFS call to search for an image by specifying a Country Code
+    When a WFS call is made to search for an image specifying a Country Code of ${files[1].countryCode}
+    Then the WFS call returns a feature for the image ${files[2].imageId}
+    And the WFS call returns a feature for the image ${files[1].imageId}
+
+  Scenario: [WFS-08] WFS call to search for an image by ImageID and verify receve_date is populated
+    When a WFS call is made to search for the image ${files[0].imageId}
+    Then the WFS call will have the receive_date populated for the image ${files[0].imageId}
+
+  @C2S
+  Scenario: [WFS-09] WFS call to search for an image by specifying a point BE Number
+    When a WFS call is made to search for an image specifying a BE Number of ${files[3].beNumber}
+    Then the WFS call returns a feature for the image ${files[3].imageId}
+
+  @C2S
+  Scenario: [WFS-10] WFS call to search for an image by specifying a point Target ID
+    When a WFS call is made to search for an image specifying a Target ID of ${files[3].targetId}
+    Then the WFS call returns a feature for the image ${files[3].imageId}
+
+  Scenario: [WFS-11] WFS call to search for an image by specifying a Sensor Type
+    When a WFS call is made to search for an image specifying a Sensor Type of ${files[0].sensorType}
+    Then the WFS call returns a feature for the image ${files[0].imageId}
+    And the WFS call returns a feature for the image ${files[1].imageId}
+
+  Scenario: [WFS-12] WFS call to search for an image by specifying a Date Range
+    When a WFS call is made to search for an image specifying a Date Range of ${files[0].startDate} to ${files[0].endDate}
+    Then the WFS call returns a feature for the image ${files[0].imageId}
+
+  Scenario: [WFS-13] WFS call to search for an image by specifying a complex query
+    When a WFS call is made to search for an image specifying a Date Range from ${files[0].startDate} to ${files[0].endDate} and Country Code of ${files[0].countryCode}
+    Then the WFS call returns a feature for the image ${files[0].imageId}
+
+  Scenario: [WFS-14] WFS call to verify metadata is available in GML3 format
+    Given that the WFS service is available
+    When a WFS call is made to with an output format of GML3
+    Then the WFS call returns metadata in a GML3 format
+
+  Scenario: [WFS-15] WFS call to verify metadata is available in JSON format
+    Given that the WFS service is available
+    When a WFS call is made to with an output format of JSON
+    Then the WFS call returns metadata in a JSON format
+
+  Scenario: [WFS-16] WFS call to verify omar-oldmar Post with filter
+    Given that the WFS service is available
+    When a WFS post to omar-oldmar with a filter in xml format is made
+    Then the WFS call returns metadata in a GML2 format

@@ -1,0 +1,26 @@
+@image_space
+Feature: ImageSpaceService
+
+
+  Scenario: [IMG-01] call ImageSpace to view a full screen jpeg image of an entire commercial EO image
+    When a call is made to ImageSpace for a ${files[0].imageType} of the entire bounding box of the image ${files[0].imageId}
+    Then ImageSpace returns a ${files[0].imageType} that matches the validation image ${files[0].verifiImage}
+
+  Scenario Outline: [IMG-3] call ImageSpace to get a thumbnail overview of an image
+    When a call is made to ImageSpace with a time limit of <timeLimitInMillis> to get a ${files[1].imageType} thumbnail of the image ${files[1].imageId}
+    Then ImageSpace returns a ${files[1].imageType} that matches the validation image ${files[1].verifiImage}
+    Examples:
+    | timeLimitInMillis |
+    | 1000              |
+
+  Scenario: [IMG-04] call ImageSpace to view an overview tile of an commercial msi image in red green blue band order
+    When a call is made to ImageSpace for an overview tile in red green blue order of the image ${files[2].imageId}
+    Then ImageSpace returns a ${files[2].imageType} that matches the validation image ${files[2].verifiImage}
+
+  Scenario: [IMG-05] call ImageSpace to view an overview tile of an commercial msi image in green blue red band order
+    When a call is made to ImageSpace for an overview tile in green blue red order of the image ${files[3].imageId}
+    Then ImageSpace returns a ${files[3].imageType} that matches the validation image ${files[3].verifiImage}
+
+  Scenario: [IMG-06] call ImageSpace to view an overview tile of an commercial msi image with only the green band
+    When a call is made to ImageSpace for an overview tile green band of the image ${files[4].imageId}
+    Then ImageSpace returns a ${files[4].imageType} that matches the validation image ${files[4].verifiImage}

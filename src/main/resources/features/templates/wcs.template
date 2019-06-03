@@ -1,0 +1,41 @@
+@web_coverage_service
+Feature: WebCoverageService
+
+  Scenario Outline: [WCS-01] A user calls WCS GetCapabilities
+    When a user calls WCS GetCapabilities version <version> for the image ${files[0].imageId}
+    Then the WCS service responds with a correct GetCapabilities statement for the image ${files[0].imageId}
+  Examples:
+    | version |
+    | 1.0.0   |
+
+  Scenario Outline: [WCS-02] A user calls WCS DescribeCoverage for a given image
+    When a user calls WCS DescribeCoverage version <version> for the image ${files[0].imageId}
+    Then the WCS service responds with a correct DescribeCoverage data for the image ${files[0].imageId}
+  Examples:
+    | version |
+    | 1.0.0   |
+
+  Scenario Outline: [WCS-03] A user call is made to WCS for the entire bounding box of an image
+    When a call is made to WCS version <version> for the entire bounding box of the image ${files[0].imageId}
+    Then WCS returns a ${files[0].imageType} that matches the validation image for the image ${files[0].imageId}
+  Examples:
+  | version |
+  | 1.0.0   |
+
+  Scenario: [WCS-04] A user call is made to WCS for a non-existent image
+    When a call is made to WCS 1.0.0 for a non-existent image
+    Then WCS returns the proper error
+
+  Scenario Outline: [WCS-05] A user call is made to WCS for a bounding box larger than an image
+    When a call is made to WCS <version> for a bounding box <bbox> larger than the image ${files[0].imageId}
+    Then WCS returns a ${files[0].imageType} that matches the validation image for the image ${files[0].imageId}
+  Examples:
+    | version |       bbox      |
+    | 1.0.0   | ${files[0].bbox.split(";")[0]} |
+
+  Scenario Outline: [WCS-06] A user call is made to WCS for a subset of an image
+    When a call is made to WCS <version> using a subset bounding box <bbox> of the image ${files[0].imageId}
+    Then WCS returns a ${files[0].imageType} that matches the validation image for the image ${files[0].imageId}
+  Examples:
+  | version |             bbox             |
+  | 1.0.0   | ${files[0].bbox.split(";")[1]}  |

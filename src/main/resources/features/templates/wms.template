@@ -1,0 +1,31 @@
+@wms_ortho
+Feature: OrthoWMSService
+
+  Scenario: [WMS-01] call Ortho WMS to view a full screen ${files[0].imageType.split(",")[0]} image of an entire commercial EO image
+    Given the needed image ${files[0].imageId} has been staged
+    When a call is made to Ortho WMS with an image type of ${files[0].imageType.split(",")[0]} for the entire bounding box of the image ${files[0].imageId}
+    Then Ortho WMS returns a ${files[0].imageType.split(",")[0]} that matches the validation image ${files[0].verifiImage}
+
+  Scenario: [WMS-02] call Ortho WMS to view a full screen ${files[0].imageType.split(",")[1]} image of an entire commercial EO image
+    Given the needed image ${files[0].imageId} has been staged
+    When a call is made to Ortho WMS with an image type of ${files[0].imageType.split(",")[1]} for the entire bounding box of the image ${files[0].imageId}
+    Then Ortho WMS returns a ${files[0].imageType.split(",")[1]} that matches the validation image ${files[0].verifiImage}
+
+  Scenario: [WMS-04] call ortho WMS for full resolution image chip
+    Given the needed image ${files[1].imageId} has been staged
+    When a call is made to Ortho WMS with an image type of ${files[1].imageType} for a 256 by 256 chip of the image ${files[1].imageId} at full resolution
+    Then Ortho WMS returns a ${files[1].imageType} that matches the validation image ${files[1].verifiImage}
+
+  Scenario: [WMS-06] Call WMS GetCapabilities version 1.1.1
+    When a system calls WMS GetCapabilities version 1.1.1
+    Then the service returns the expected GetCapabilities response
+
+  Scenario: [WMS-07] Call WMS GetCapabilities version 1.3
+    When a system calls WMS GetCapabilities version 1.3
+    Then the service returns the expected GetCapabilities response
+
+  Scenario: [WMS-08] WMS call to create single image from multiple image IDs
+    Given the needed image ${files[2].imageId} has been staged
+    And the needed image ${files[3].imageId} has been staged
+    When a WMS call is made for the image ${files[2].imageId} and the image ${files[3].imageId}
+    Then a stitched image will be returned

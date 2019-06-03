@@ -1,0 +1,25 @@
+@map_tile_service
+Feature: MapTileService
+
+  Scenario Outline: [WMTS-01] system calls WMTS GetCapabilities
+    When a user calls GetCapabilities for version <version>
+    Then the WMTS service responds with a correct GetCapabilities statement
+    Examples:
+      |version|
+      |1.0.0  |
+
+  Scenario: [WMTS-02] WMTS call to get the entire bounding box of an imageId
+    When a call is made to WMTS for a ${files[0].imageType} image the for the entire bounding box of the image ${files[0].imageId}
+    Then WMTS returns tiles that matches the validation ${files[0].imageType} image
+
+  Scenario: [WMTS-03] WMTS call to get the outside entire bounding box of an image
+    When a call is made to WMTS for a ${files[0].imageType} outside entire bounding box of the image ${files[0].imageId}
+    Then WMTS returns the proper error
+
+  Scenario: [WMTS-04] WMTS call for a non-existent image
+    When a call is made to WMTS for a non-existent image
+    Then WMTS returns the proper error
+
+  Scenario: [WMTS-05] WMTS call for a subset of an image
+    When a call is made to WMTS for ${files[0].imageType} of a subset of the image ${files[0].imageId}
+    Then WMTS returns tiles that matches the validation ${files[0].imageType} image
