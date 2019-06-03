@@ -85,6 +85,73 @@ image_id_field_name = "imageId"
 observation_date_time_field_name = "observationDateTime"
 url_field_name = "uRL"
 
+if (System.getProperty("resourcePath"))
+{
+    feature_file_path = "${System.getProperty("resourcePath")}/features"
+} else {
+    feature_file_path = "src/main/resources/features"
+}
+
+// List the path to the feature and template files
+featureTemplateFiles = [
+    templates:[
+        download:[
+            template_file:"${feature_file_path}/templates/download.template",
+            feature_file:"${feature_file_path}/12_Download_Service.feature",
+            data:"download_data"
+        ],
+        superoverlay:[
+            template_file:"${feature_file_path}/templates/superoverlay.template",
+            feature_file:"${feature_file_path}/11_Superoverlay_Service.feature",
+            data:"superoverlay_data"
+        ],
+        jpip:[
+            template_file:"${feature_file_path}/templates/jpip.template",
+            feature_file:"${feature_file_path}/10_JPIP_Service.feature",
+            data:"jpip_data"
+        ],
+        ngt:[
+            template_file:"${feature_file_path}/templates/ngt.template",
+            feature_file:"${feature_file_path}/09_NGT_Service.feature",
+            data:"ngt_data"
+        ],
+        wfs:[
+            template_file:"${feature_file_path}/templates/wfs.template",
+            feature_file:"${feature_file_path}/01_Web_Feature_Service.feature",
+            data:"wfs_data"
+        ],
+        geoscript:[
+            template_file:"${feature_file_path}/templates/geoscript.template",
+            feature_file:"${feature_file_path}/07_Geoscript_Service.feature",
+            data:"geoscript_data"
+        ],
+        wmts:[
+            template_file:"${feature_file_path}/templates/wmts.template",
+            feature_file:"${feature_file_path}/06_Web_Map_Tile_Service.feature",
+            data:"wmts_data"
+        ],
+        wcs:[
+            template_file:"${feature_file_path}/templates/wcs.template",
+            feature_file:"${feature_file_path}/05_Web_Coverage_Service.feature",
+            data:"wcs_data"
+        ],
+        wms:[
+            template_file:"${feature_file_path}/templates/wms.template",
+            feature_file:"${feature_file_path}/02_Web_Map_Service.feature",
+            data:"wms_data"
+        ],
+        mensa:[
+            template_file:"${feature_file_path}/templates/mensa.template",
+            feature_file:"${feature_file_path}/04_Mensuration_Service.feature",
+            data:"mensa_data"
+        ],
+        image_space:[
+            template_file:"${feature_file_path}/templates/image_space.template",
+            feature_file:"${feature_file_path}/03_Image_Space_Service.feature",
+            data:"image_space_data"
+        ]
+    ]
+]
 
 // Image to be ingested and the information associated with them
 image_files = [

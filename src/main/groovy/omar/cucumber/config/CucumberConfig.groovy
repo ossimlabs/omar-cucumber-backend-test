@@ -23,7 +23,6 @@ class CucumberConfig
 
         if (System.env.CUCUMBER_CONFIG_LOCATION)
         {
-            println "CucumberTest IF STATEMENT"
             File testForLocal = new File(System.env.CUCUMBER_CONFIG_LOCATION)
             if (!testForLocal.exists())
             {
@@ -36,7 +35,6 @@ class CucumberConfig
         }
         else
         {
-            println "CucumberTest ELSE STATEMENT"
             resourceFile = new File("cucumber-config.groovy")
             if (resourceFile.exists())
             {
@@ -53,9 +51,6 @@ class CucumberConfig
         }
         if (resourceFile)
         {
-
-            println "CucumberTest STATEMENT"
-
             def slurper = new ConfigSlurper()
             config = slurper.parse(resourceFile)
         }
