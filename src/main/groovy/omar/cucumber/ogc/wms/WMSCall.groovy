@@ -55,6 +55,44 @@ class WMSCall {
       urlWMS
     }//end getImage
 
+    URL getPsm(wmsServer, height=512, width=512, return_image_type, bbox, filter) {
+
+        HashMap wmsParams = [
+                SERVICE:"WMS",
+                REQUEST:"GetPsm",
+                LAYERS:"omar:raster_entry",
+                BBOX:"${bbox}",
+                SRS:"EPSG:4326",
+                WIDTH:"${width}",
+                HEIGHT:"${height}",
+                FORMAT:"image/${return_image_type}",
+                STYLES:URLEncoder.encode("""{"nullPixelFlip": false}""", Charset.defaultCharset().displayName()),
+                TRANSPARENT:true,
+                FILTER: URLEncoder.encode(filter, Charset.defaultCharset().displayName())
+        ]
+
+        String wmsParamsString = urlParamsToString(wmsParams)
+        String wmsUrlString = "${wmsServer}/getPsm?${wmsParamsString}"
+
+        //start timer
+        Date startWmsCall = new Date()
+
+        //creates a URL object from the wms call
+        urlWMS = new URL(wmsUrlString.toString())
+
+        //end timer
+        Date endWmsCall = new Date()
+
+        //calculate how long the process took
+        TimeDuration duration = TimeCategory.minus( endWmsCall, startWmsCall )
+
+        //convert the duration from milliseconds to seconds
+        elapsedTime = duration.toMilliseconds()/1000
+
+        //returns the URL object
+        urlWMS
+    }//end getImage
+
     String getBBox(String wfsServer, String filter){
 
         def wfsCall = new WFSCall(wfsServer, filter, "JSON", 1)

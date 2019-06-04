@@ -29,3 +29,9 @@ Feature: OrthoWMSService
     And the needed image 16MAY02111607-P1BS-055998375010_01_P014 has been staged
     When a WMS call is made for the image 16MAY02111606-P1BS-055998375010_01_P013 and the image 16MAY02111607-P1BS-055998375010_01_P014
     Then a stitched image will be returned
+
+  Scenario: [WMS-09] WMS call to get a Pan-Sharpened Image
+    Given the needed image 05FEB09OV05010005V090205M0001912264B220000100072M_001508507 has been staged
+    And the needed image 05FEB09OV05010005V090205P0001912264B220000100282M_001508507 has been staged
+    When a WMS getPSM call is made for the image 05FEB09OV05010005V090205M0001912264B220000100072M_001508507 and the image 05FEB09OV05010005V090205P0001912264B220000100282M_001508507
+    Then GetPsm WMS returns a png that matches the validation image 05FEB09OV05010005V090205_psm_chip_dev

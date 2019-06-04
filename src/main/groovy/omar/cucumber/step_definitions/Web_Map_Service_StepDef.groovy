@@ -11,6 +11,8 @@ import groovy.json.JsonSlurper
 import javax.imageio.ImageIO
 import omar.cucumber.ogc.util.TestImageInfo
 
+import java.awt.image.BufferedImage
+
 this.metaClass.mixin(cucumber.api.groovy.Hooks)
 this.metaClass.mixin(cucumber.api.groovy.EN)
 
@@ -24,6 +26,7 @@ def wmsGetCapabilitiesReturn
 def serverVersion
 def stitchImage1
 def stitchImage2
+def psmReturnImage
 Double elapsedTimeInSeconds
 
 String imageData = "wms_data"
@@ -122,6 +125,31 @@ When(~/^a WMS call is made for the image (.*) and the image (.*)$/) {
     stitchedImage = ImageIO.read(stitchedImageUrl)
 }
 
+When(~/^a WMS getPSM call is made for the image (.*) and the image (.*)$/) {
+    String image1, String image2 ->
+
+        TestImageInfo imageInfo = new TestImageInfo()
+        String imageId1 = imageInfo.getImageInfo(image1,imageData).image_id
+        String imageId2 = imageInfo.getImageInfo(image2,imageData).image_id
+
+        def images = []
+        [imageId1, imageId2].each {
+            def wfsQuery = new WFSCall(wfsServer, "entry_id='0' and filename LIKE '%${it.trim()}%'", "JSON", 1)
+            def json = new JsonSlurper().parseText(wfsQuery.text)
+            images << json.features[0]
+        }
+
+        def bounds = images.collect { new MultiPolygon(it.geometry.coordinates).getBounds() }
+        def bbox = [
+                bounds.collect({ it.getMinX() }).min(),
+                bounds.collect({ it.getMinY() }).min(),
+                bounds.collect({ it.getMaxX() }).max(),
+                bounds.collect({ it.getMaxY() }).max()
+        ]
+
+        psmReturnImage = new WMSCall().getPsm(wmsServer, 512, 512, "png", bbox.join(","), "in(${images[0].properties.id},${images[1].properties.id})")
+}
+
 Then(~/^a stitched image will be returned$/) { ->
     [stitchImage1, stitchImage2].each {
         def image = it
@@ -162,9 +190,15 @@ Then(~/^a stitched image will be returned$/) { ->
     assert transparencyCount / (512 * 512) > 0 && transparencyCount / (512 * 512) < 0.05
 }
 
-
 Then(~/^the service returns the expected GetCapabilities response$/) { ->
     assert wmsGetCapabilitiesReturn instanceof GPathResult
+}
+
+Then(~/^GetPsm WMS returns a (.*) that matches the validation image (.*)$/) {
+    String imageType, String image ->
+
+        verificationImageUrl = new URL("${s3BucketUrl}/${s3Bucket}/WMS_verification_images/${image}.${imageType}")
+        assert FileCompare.checkImages(verificationImageUrl, psmReturnImage, imageType)
 }
 
 Then(~/^Ortho WMS returns a (.*) that matches the validation image (.*)$/) {
