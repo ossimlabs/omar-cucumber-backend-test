@@ -30,12 +30,18 @@ Feature: OrthoWMSService
     When a WMS call is made for the image ${files[2].imageId} and the image ${files[3].imageId}
     Then a stitched image will be returned
 
-  Scenario: [WMS-10] WMS call to auto-format a jpeg image
+  Scenario: [WMS-09] WMS call to get a Pan-Sharpened Image
     Given the needed image ${files[4].imageId} has been staged
-    When a WMS call is made for the image ${files[4].imageId} with bounding box of ${files[4].bbox[0]}
-    Then Ortho WMS returns a ${files[4].imageType.split(",")[0]} that matches the validation image ${files[4].verifiImage}
+    And the needed image ${files[4].image2Id} has been staged
+    When a WMS getPSM call is made for the image ${files[4].imageId} and the image ${files[4].image2Id}
+    Then GetPsm WMS returns a png that matches the validation image ${files[4].verifiImage}
+
+  Scenario: [WMS-10] WMS call to auto-format a jpeg image
+    Given the needed image ${files[5].imageId} has been staged
+    When a WMS call is made for the image ${files[5].imageId} with bounding box of ${files[5].bbox[0]}
+    Then Ortho WMS returns a ${files[5].imageType.split(",")[0]} that matches the validation image ${files[5].verifiImage}
 
   Scenario: [WMS-11] WMS call to auto-format png image
-    Given the needed image ${files[4].imageId} has been staged
-    When a WMS call is made for the image ${files[4].imageId} with bounding box of ${files[4].bbox[1]}
-    Then Ortho WMS returns a ${files[4].imageType.split(",")[1]} that matches the validation image ${files[4].verifiImage}
+    Given the needed image ${files[5].imageId} has been staged
+    When a WMS call is made for the image ${files[5].imageId} with bounding box of ${files[5].bbox[1]}
+    Then Ortho WMS returns a ${files[5].imageType.split(",")[1]} that matches the validation image ${files[5].verifiImage}

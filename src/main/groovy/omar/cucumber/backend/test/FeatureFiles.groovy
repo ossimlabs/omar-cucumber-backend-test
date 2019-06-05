@@ -45,6 +45,7 @@ class FeatureFiles {
                                     break
                                 case "wms_data":
                                     imageDataFromConfigMap.put("imageId",imageInfo.getValue().image_id)
+                                    imageDataFromConfigMap.put("image2Id",imageInfo.getValue().image2_id)
                                     imageDataFromConfigMap.put("verifiImage",imageInfo.getValue().verification_image)
                                     imageDataFromConfigMap.put("imageType",imageInfo.getValue().image_type)
                                     imageDataFromConfigMap.put("bbox",imageInfo.getValue().bbox)

@@ -328,30 +328,42 @@ image_files = [
                 images:[
                         image_01:[
                                 image_id:"05FEB09OV05010005V090205M0001912264B220000100072M_001508507",
+                                image2_id:"",
                                 verification_image:"05FEB09OV05010005V090205M0001912264B220000100072M_001508507_dev",
                                 image_type:"jpeg,png",
                                 bbox:[]
                         ],
                         image_02:[
                                 image_id:"05FEB09OV05010005V090205P0001912264B220000100282M_001508507",
+                                image2_id:"",
                                 verification_image:"05FEB09OV05010005V090205P0001912264B220000100282M_001508507_chip_dev",
                                 image_type:"png",
                                 bbox:[]
                         ],
                         image_03:[
                                 image_id:"16MAY02111606-P1BS-055998375010_01_P013",
+                                image2_id:"",
                                 verification_image:"",
                                 image_type:"",
                                 bbox:[]
                         ],
                         image_04:[
                                 image_id:"16MAY02111607-P1BS-055998375010_01_P014",
+                                image2_id:"",
                                 verification_image:"",
                                 image_type:"",
                                 bbox:[]
                         ],
                         image_05:[
+                                image_id:"05FEB09OV05010005V090205M0001912264B220000100072M_001508507",
+                                image2_id:"05FEB09OV05010005V090205P0001912264B220000100282M_001508507",
+                                verification_image:"05FEB09OV05010005V090205_psm_chip_dev",
+                                image_type:"",
+                                bbox:[]
+                        ],
+                        image_06:[
                                 image_id:"16AUG23141705-P1BS-057310297010_01_P002",
+                                image2_id:"",
                                 verification_image:"16AUG23141705-P1BS-057310297010_01_P002_chip_dev",
                                 image_type:"jpeg,png",
                                 bbox:["-3.5767,40.4258,-3.4071,40.5200","-3.6177,40.4172,-3.5438,40.4663"]
