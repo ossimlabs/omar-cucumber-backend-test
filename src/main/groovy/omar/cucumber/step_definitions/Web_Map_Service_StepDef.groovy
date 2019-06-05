@@ -150,6 +150,18 @@ When(~/^a WMS getPSM call is made for the image (.*) and the image (.*)$/) {
         psmReturnImage = new WMSCall().getPsm(wmsServer, 512, 512, "png", bbox.join(","), "in(${images[0].properties.id},${images[1].properties.id})")
 }
 
+When(~/^a WMS call is made for the image (.*) with bounding box of (.*)$/) {
+    String image, String bbox ->
+
+    TestImageInfo imageInfo = new TestImageInfo()
+    String imageId = imageInfo.getImageInfo(image,imageData).image_id
+
+    def filter = "entry_id='0' and filename LIKE '%${imageId}%'"
+    def wmsCall = new WMSCall()
+
+    wmsReturnImage = wmsCall.getImage(wmsServer, 512, 512, "vnd.jpeg-png", bbox, filter)
+}
+
 Then(~/^a stitched image will be returned$/) { ->
     [stitchImage1, stitchImage2].each {
         def image = it

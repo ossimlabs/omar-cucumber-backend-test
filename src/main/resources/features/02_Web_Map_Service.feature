@@ -35,3 +35,13 @@ Feature: OrthoWMSService
     And the needed image 05FEB09OV05010005V090205P0001912264B220000100282M_001508507 has been staged
     When a WMS getPSM call is made for the image 05FEB09OV05010005V090205M0001912264B220000100072M_001508507 and the image 05FEB09OV05010005V090205P0001912264B220000100282M_001508507
     Then GetPsm WMS returns a png that matches the validation image 05FEB09OV05010005V090205_psm_chip_dev
+
+  Scenario: [WMS-10] WMS call to auto-format a jpeg image
+    Given the needed image 16AUG23141705-P1BS-057310297010_01_P002 has been staged
+    When a WMS call is made for the image 16AUG23141705-P1BS-057310297010_01_P002 with bounding box of -3.5767,40.4258,-3.4071,40.5200
+    Then Ortho WMS returns a jpeg that matches the validation image 16AUG23141705-P1BS-057310297010_01_P002_chip_dev
+
+  Scenario: [WMS-11] WMS call to auto-format png image
+    Given the needed image 16AUG23141705-P1BS-057310297010_01_P002 has been staged
+    When a WMS call is made for the image 16AUG23141705-P1BS-057310297010_01_P002 with bounding box of -3.6177,40.4172,-3.5438,40.4663
+    Then Ortho WMS returns a png that matches the validation image 16AUG23141705-P1BS-057310297010_01_P002_chip_dev
