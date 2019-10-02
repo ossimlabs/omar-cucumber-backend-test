@@ -12,12 +12,6 @@ properties([
     disableConcurrentBuilds()
 ])
 
-String gradleTask
-
-gradleTask = "buildDockerImage"
-
-
-
 node("${BUILD_NODE}"){
 
     stage("Checkout branch $BRANCH_NAME")
@@ -25,39 +19,59 @@ node("${BUILD_NODE}"){
         checkout(scm)
     }
 
-        stage("Load Variables")
-        {
-            withCredentials([string(credentialsId: 'o2-artifact-project', variable: 'o2ArtifactProject')]) {
-                step ([$class: "CopyArtifact",
-                    projectName: o2ArtifactProject,
-                    filter: "common-variables.groovy",
-                    flatten: true])
-                step ([$class: "CopyArtifact",
-                    projectName: o2ArtifactProject,
-                    filter: "cucumber-configs/cucumber-config-ingest.groovy",
-                    flatten: true])
-            }
-            load "common-variables.groovy"
+    stage("Load Variables")
+    {
+        withCredentials([string(credentialsId: 'o2-artifact-project', variable: 'o2ArtifactProject')]) {
+            step ([$class: "CopyArtifact",
+                projectName: o2ArtifactProject,
+                filter: "common-variables.groovy",
+                flatten: true])
+            step ([$class: "CopyArtifact",
+                projectName: o2ArtifactProject,
+                filter: "cucumber-configs/cucumber-config-backend.groovy",
+                flatten: true])
         }
+        load "common-variables.groovy"
+    }
 
+    withCredentials([
+                       [$class: 'UsernamePasswordMultiBinding',
+                       credentialsId: 'curlCredentials',
+                       usernameVariable: 'ORG_GRADLE_PROJECT_cUname',
+                       passwordVariable: 'ORG_GRADLE_PROJECT_cPword'],
+                       [$class: 'UsernamePasswordMultiBinding',
+                       credentialsId: 'dockerCredentials',
+                       usernameVariable: 'ORG_GRADLE_PROJECT_dockerRegistryUsername',
+                       passwordVariable: 'ORG_GRADLE_PROJECT_dockerRegistryPassword']
+                    ])
+    {
         stage ("Build Docker Image")
         {
-            withCredentials([[$class: 'UsernamePasswordMultiBinding',
-                        credentialsId: 'curlCredentials',
-                        usernameVariable: 'CURL_USER_NAME',
-                        passwordVariable: 'CURL_PASSWORD']])
+            sh """
+                echo "TARGET_DEPLOYMENT = ${TARGET_DEPLOYMENT}"
+                export CUCUMBER_CONFIG_LOCATION="cucumber-config-backend.groovy"
+                export DISPLAY=":1"
+                gradle buildDockerImage
+            """
+        }
+
+        stage ("Publish Docker App")
+        {
+            withCredentials([])
             {
                 sh """
-                    echo "TARGET_DEPLOYMENT = ${TARGET_DEPLOYMENT}"
-                    export CUCUMBER_CONFIG_LOCATION="cucumber-config-ingest.groovy"
-                    export DISPLAY=":1"
-                    gradle ${gradleTask}
+                   docker login $DOCKER_REGISTRY_URL \
+                    --username=$ORG_GRADLE_PROJECT_dockerRegistryUsername \
+                    --password=$ORG_GRADLE_PROJECT_dockerRegistryPassword
+                   gradle pushDockerImage \
+                       -PossimMavenProxy=${OSSIM_MAVEN_PROXY}
                 """
             }
         }
+    }
 
-        stage("Clean Workspace") {
-            if ("${CLEAN_WORKSPACE}" == "true")
-            step([$class: 'WsCleanup'])
-        }
+    stage("Clean Workspace") {
+        if ("${CLEAN_WORKSPACE}" == "true")
+        step([$class: 'WsCleanup'])
+    }
 }
