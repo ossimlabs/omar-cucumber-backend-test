@@ -45,21 +45,13 @@ node("${BUILD_NODE}"){
                        passwordVariable: 'ORG_GRADLE_PROJECT_dockerRegistryPassword']
                     ])
     {
-        stage ("Build Docker Image")
-        {
-            sh """
-                echo "TARGET_DEPLOYMENT = ${TARGET_DEPLOYMENT}"
-                export CUCUMBER_CONFIG_LOCATION="cucumber-config-backend.groovy"
-                export DISPLAY=":1"
-                gradle buildDockerImage
-            """
-        }
-
         stage ("Publish Docker App")
         {
             withCredentials([])
             {
                 sh """
+                   export CUCUMBER_CONFIG_LOCATION="cucumber-config-backend.groovy"
+                   export DISPLAY=":1" 
                    docker login $DOCKER_REGISTRY_URL \
                     --username=$ORG_GRADLE_PROJECT_dockerRegistryUsername \
                     --password=$ORG_GRADLE_PROJECT_dockerRegistryPassword
