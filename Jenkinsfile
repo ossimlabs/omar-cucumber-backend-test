@@ -56,7 +56,7 @@ node("${BUILD_NODE}"){
                     --username=$ORG_GRADLE_PROJECT_dockerRegistryUsername \
                     --password=$ORG_GRADLE_PROJECT_dockerRegistryPassword
                    gradle pushDockerImage \
-                       -PossimMavenProxy=${OSSIM_MAVEN_PROXY}
+                       -PossimMavenProxy=${OSSIM_MAVEN_PROXY} \
                        -PbuildVersion=${dockerTagSuffixOrEmpty()}
                 """
             }
@@ -77,5 +77,5 @@ node("${BUILD_NODE}"){
 String dockerTagSuffixOrEmpty() {
     // We want to use the branch name if built in a multi-branch pipeline.
     // Otherwise we want no tag to be used in order to not override the default tag.
-    if (env.BRANCH_NAME != null) return ":${env.BRANCH_NAME}" else return ""
+    if (env.BRANCH_NAME != null) return "${env.BRANCH_NAME}" else return ""
 }
