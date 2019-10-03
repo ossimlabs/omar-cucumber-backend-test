@@ -45,26 +45,19 @@ node("${BUILD_NODE}"){
                        passwordVariable: 'ORG_GRADLE_PROJECT_dockerRegistryPassword']
                     ])
     {
-        stage ("Build Docker Image")
-        {
-            sh """
-                echo "TARGET_DEPLOYMENT = ${TARGET_DEPLOYMENT}"
-                export CUCUMBER_CONFIG_LOCATION="cucumber-config-backend.groovy"
-                export DISPLAY=":1"
-                gradle buildDockerImage
-            """
-        }
-
         stage ("Publish Docker App")
         {
             withCredentials([])
             {
                 sh """
+                   export CUCUMBER_CONFIG_LOCATION="cucumber-config-backend.groovy"
+                   export DISPLAY=":1" 
                    docker login $DOCKER_REGISTRY_URL \
                     --username=$ORG_GRADLE_PROJECT_dockerRegistryUsername \
                     --password=$ORG_GRADLE_PROJECT_dockerRegistryPassword
                    gradle pushDockerImage \
-                       -PossimMavenProxy=${OSSIM_MAVEN_PROXY}
+                       -PossimMavenProxy=${OSSIM_MAVEN_PROXY} \
+                       -PbuildVersion=${dockerTagSuffixOrEmpty()}
                 """
             }
         }
@@ -74,4 +67,15 @@ node("${BUILD_NODE}"){
         if ("${CLEAN_WORKSPACE}" == "true")
         step([$class: 'WsCleanup'])
     }
+}
+
+/**
+ * Returns the docker image tag suffix, including the colon, or an empty string.
+ *
+ * @return Valid docker tag suffix, (e.g. ":someTag")
+ */
+String dockerTagSuffixOrEmpty() {
+    // We want to use the branch name if built in a multi-branch pipeline.
+    // Otherwise we want no tag to be used in order to not override the default tag.
+    if (env.BRANCH_NAME != null) return "${env.BRANCH_NAME}" else return ""
 }
