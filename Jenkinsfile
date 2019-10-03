@@ -57,6 +57,7 @@ node("${BUILD_NODE}"){
                     --password=$ORG_GRADLE_PROJECT_dockerRegistryPassword
                    gradle pushDockerImage \
                        -PossimMavenProxy=${OSSIM_MAVEN_PROXY}
+                       -PbuildVersion=${dockerTagSuffixOrEmpty()}
                 """
             }
         }
@@ -66,4 +67,15 @@ node("${BUILD_NODE}"){
         if ("${CLEAN_WORKSPACE}" == "true")
         step([$class: 'WsCleanup'])
     }
+}
+
+/**
+ * Returns the docker image tag suffix, including the colon, or an empty string.
+ *
+ * @return Valid docker tag suffix, (e.g. ":someTag")
+ */
+String dockerTagSuffixOrEmpty() {
+    // We want to use the branch name if built in a multi-branch pipeline.
+    // Otherwise we want no tag to be used in order to not override the default tag.
+    if (env.BRANCH_NAME != null) return ":${env.BRANCH_NAME}" else return ""
 }
