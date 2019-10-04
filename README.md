@@ -1,5 +1,5 @@
 # omar-cucumber-backend-test
-Testing the ingest for https://omar-dev.ossim.io
+Testing the ingest for https://omar-dev.ossim.io/omar-cucumber-backend-test/backend-test/
 
 A java application that runs a cucumber test against the O2 environment sqs-stager service.
 
