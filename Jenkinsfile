@@ -12,6 +12,7 @@ properties([
     disableConcurrentBuilds()
 ])
 
+timeout(time: 30, unit: 'MINUTES') {
 node("${BUILD_NODE}"){
 
     stage("Checkout branch $BRANCH_NAME")
@@ -74,4 +75,5 @@ String dockerTagSuffixOrEmpty() {
     // We want to use the branch name if built in a multi-branch pipeline.
     // Otherwise we want no tag to be used in order to not override the default tag.
     if (env.BRANCH_NAME != null) return "${env.BRANCH_NAME}" else return ""
+}
 }
