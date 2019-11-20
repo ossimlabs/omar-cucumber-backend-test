@@ -12,6 +12,7 @@ properties([
     disableConcurrentBuilds()
 ])
 
+timeout(time: 30, unit: 'MINUTES') {
 node("${BUILD_NODE}"){
 
     stage("Checkout branch $BRANCH_NAME")
@@ -64,7 +65,8 @@ node("${BUILD_NODE}"){
         step([$class: 'WsCleanup'])
     }
 }
-
+}
+    
 /**
  * Returns the docker image tag suffix, including the colon, or an empty string.
  *
