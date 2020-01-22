@@ -1,4 +1,5 @@
-targetDeployment = System.getenv("TARGET_DEPLOYMENT")
+// targetDeployment = System.getenv("TARGET_DEPLOYMENT")
+targetDeployment = System.getenv("BRANCH_NAME")
 if (!targetDeployment) {
     targetDeployment = "dev"
 }
