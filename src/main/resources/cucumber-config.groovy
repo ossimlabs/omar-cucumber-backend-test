@@ -31,6 +31,7 @@ switch(targetDeployment) {
         break
     case "prod":
         s3BasemapUrlList = "Basemaptest-prod.txt"
+        rbtcloudRootDir = "https://omar.${domainName}"
         break
     case "blue":
         s3BasemapUrlList = "Basemaptest-prod.txt"
@@ -43,6 +44,7 @@ switch(targetDeployment) {
         break
     case "dev":
         s3BasemapUrlList = "Basemaptest-dev.txt"
+        rbtcloudRootDir = "https://omar-${targetDeployment}.${domainName}"
         break
     default:
         println("\nBad TARGET_DEPLOYMENT provided: <${targetDeployment}>. Defaulting to dev.")
