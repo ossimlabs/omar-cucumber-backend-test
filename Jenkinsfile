@@ -32,8 +32,8 @@ timeout(time: 30, unit: 'MINUTES') {
             stage("Run Test") {
                 sh """
                     export DISPLAY=":1"
-                    gradle run -PbuildVersion=${dockerTagSuffixOrEmpty()}
-                    gradle backend
+                    gradlew run -PbuildVersion=${dockerTagSuffixOrEmpty()}
+                    gradlew backend
                 """
             }
         } finally {
@@ -68,7 +68,7 @@ timeout(time: 30, unit: 'MINUTES') {
                            docker login $DOCKER_REGISTRY_URL \
                             --username=$ORG_GRADLE_PROJECT_dockerRegistryUsername \
                             --password=$ORG_GRADLE_PROJECT_dockerRegistryPassword
-                           gradle pushDockerImage \
+                           gradlew pushDockerImage \
                                -PossimMavenProxy=${OSSIM_MAVEN_PROXY} \
                                -PbuildVersion=${dockerTagSuffixOrEmpty()}
                         """
