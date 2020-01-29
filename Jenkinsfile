@@ -1,7 +1,6 @@
 properties([
         parameters([
                 string(name: 'BUILD_NODE', defaultValue: 'omar-build', description: 'The build node to run on'),
-                string(name: 'TARGET_DEPLOYMENT', defaultValue: 'dev', description: 'The deployment to run the tests against'),
                 booleanParam(name: 'CLEAN_WORKSPACE', defaultValue: true, description: 'Clean the workspace at the end of the run'),
         ]),
         pipelineTriggers([
@@ -29,51 +28,19 @@ timeout(time: 30, unit: 'MINUTES') {
             load "common-variables.groovy"
         }
 
-        withCredentials([
-                [$class          : 'UsernamePasswordMultiBinding',
-                 credentialsId   : 'curlCredentials',
-                 usernameVariable: 'ORG_GRADLE_PROJECT_cUname',
-                 passwordVariable: 'ORG_GRADLE_PROJECT_cPword'],
-                [$class          : 'UsernamePasswordMultiBinding',
-                 credentialsId   : 'dockerCredentials',
-                 usernameVariable: 'ORG_GRADLE_PROJECT_dockerRegistryUsername',
-                 passwordVariable: 'ORG_GRADLE_PROJECT_dockerRegistryPassword']
-        ])
-                {
-                    stage("Publish Docker App") {
-                        withCredentials([]) {
-                            sh """
-                               export CUCUMBER_CONFIG_LOCATION="cucumber-config-backend.groovy"
-                               export DISPLAY=":1"
-                               docker login $DOCKER_REGISTRY_URL \
-                                --username=$ORG_GRADLE_PROJECT_dockerRegistryUsername \
-                                --password=$ORG_GRADLE_PROJECT_dockerRegistryPassword
-                               gradle pushDockerImage \
-                                   -PossimMavenProxy=${OSSIM_MAVEN_PROXY} \
-                                   -PbuildVersion=${dockerTagSuffixOrEmpty()}
-                            """
-                        }
-                    }
-                }
-
         try {
             stage("Run Test") {
                 sh """
-                    echo "TARGET_DEPLOYMENT = ${TARGET_DEPLOYMENT}"
                     export DISPLAY=":1"
+                    gradle run -PbuildVersion=${dockerTagSuffixOrEmpty()}
                     gradle backend
                 """
             }
         } finally {
-            stage("Archive") {
-                sh "cp build/backend.json ."
-                archiveArtifacts "backend.json"
-            }
-
             stage("Publish Report") {
                 step([$class             : 'CucumberReportPublisher',
                       fileExcludePattern : '',
-                      fileIncludePattern : '',
+                      fileIncludePattern : '**/backend.json',
                       ignoreFailedTests  : false,
                       jenkinsBasePath    : '',
                       jsonReportDirectory: "build",
@@ -82,11 +49,37 @@ timeout(time: 30, unit: 'MINUTES') {
                       skippedFails       : false,
                       undefinedFails     : false])
             }
-        }
 
-        stage("Clean Workspace") {
-            if ("${CLEAN_WORKSPACE}" == "true")
-                step([$class: 'WsCleanup'])
+            withCredentials([
+                    [$class          : 'UsernamePasswordMultiBinding',
+                     credentialsId   : 'curlCredentials',
+                     usernameVariable: 'ORG_GRADLE_PROJECT_cUname',
+                     passwordVariable: 'ORG_GRADLE_PROJECT_cPword'],
+                    [$class          : 'UsernamePasswordMultiBinding',
+                     credentialsId   : 'dockerCredentials',
+                     usernameVariable: 'ORG_GRADLE_PROJECT_dockerRegistryUsername',
+                     passwordVariable: 'ORG_GRADLE_PROJECT_dockerRegistryPassword']
+            ]) {
+                stage("Publish Docker App") {
+                    withCredentials([]) {
+                        sh """
+                           export CUCUMBER_CONFIG_LOCATION="cucumber-config-backend.groovy"
+                           export DISPLAY=":1"
+                           docker login $DOCKER_REGISTRY_URL \
+                            --username=$ORG_GRADLE_PROJECT_dockerRegistryUsername \
+                            --password=$ORG_GRADLE_PROJECT_dockerRegistryPassword
+                           gradle pushDockerImage \
+                               -PossimMavenProxy=${OSSIM_MAVEN_PROXY} \
+                               -PbuildVersion=${dockerTagSuffixOrEmpty()}
+                        """
+                    }
+                }
+            }
+
+            stage("Clean Workspace") {
+                if ("${CLEAN_WORKSPACE}" == "true")
+                    step([$class: 'WsCleanup'])
+            }
         }
     }
 }

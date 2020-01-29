@@ -8,7 +8,7 @@ plugins {
     id 'groovy'
     // Apply the application plugin to add support for building an application
     id 'application'
-    id 'com.github.johnrengelman.shadow' version '4.0.2'
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
     id 'java'
     id 'com.bmuschko.docker-remote-api' version '4.6.2'
 }
@@ -60,6 +60,8 @@ defaultTasks = ['shadowJar']
 version = "${buildVersion}"
 
 shadowJar {
+    archiveClassifier.set("")
+
     manifest {
         attributes 'Main-Class': 'omar.cucumber.backend.test.App'
     }
