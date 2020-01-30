@@ -31,10 +31,9 @@ timeout(time: 30, unit: 'MINUTES') {
         try {
             stage("Run Test") {
                 sh """
-                    ./gradlew build
                     export DISPLAY=":1"
                     ./gradlew run -PbuildVersion=${dockerTagSuffixOrEmpty()}
-                    ./gradlew wrapper backend
+                    ./gradlew backend
                 """
             }
         } finally {
@@ -44,7 +43,7 @@ timeout(time: 30, unit: 'MINUTES') {
                       fileIncludePattern : '**/backend.json',
                       ignoreFailedTests  : false,
                       jenkinsBasePath    : '',
-                      jsonReportDirectory: "build",
+                      jsonReportDirectory: "{$WORKSPACE}/src/main/groovy/omar/webapp/reports/json",
                       parallelTesting    : false,
                       pendingFails       : false,
                       skippedFails       : false,

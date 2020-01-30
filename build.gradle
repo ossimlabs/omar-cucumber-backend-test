@@ -33,10 +33,12 @@ dependencies {
     implementation 'org.codehaus.groovy:groovy-all:2.5.4'
     compile group: 'com.github.mkolisnyk', name: 'cucumber-runner', version: '1.3.5'
     compile group: 'io.cucumber', name: 'cucumber-groovy', version: '4.3.0'
-    testCompile group: 'io.cucumber', name: 'cucumber-junit', version: '4.3.1'
-    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.5.0-M1'
     compile "com.amazonaws:aws-java-sdk-sqs:1.11.26"
     compile "org.gebish:geb-core:1.0"
+    compile 'info.cukes:cucumber-groovy:1.2.6'
+    testCompile "info.cukes:cucumber-junit:1.2.6"
+    testCompile group: 'io.cucumber', name: 'cucumber-junit', version: '4.3.1'
+    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.5.0-M1'
     // Tomcat libraries
     compile "org.apache.tomcat.embed:tomcat-embed-core:8.5.23"
     compile "org.apache.tomcat.embed:tomcat-embed-jasper:8.5.23"
