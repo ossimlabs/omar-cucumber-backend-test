@@ -1,4 +1,3 @@
-// targetDeployment = System.getenv("TARGET_DEPLOYMENT")
 targetDeployment = System.getenv("BRANCH_NAME")
 if (!targetDeployment) {
     targetDeployment = "dev"
@@ -25,28 +24,15 @@ if (!rbtcloudRootDir) {
 }
 
 s3BasemapUrlList = "NOT_ASSIGNED"
-//rbtcloudRootDir = "https://omar-${targetDeployment}.${domainName}"
+
 switch(targetDeployment) {
-    case "stage":
-        s3BasemapUrlList = "Basemaptest-stage.txt"
-        break
-    case "prod":
+    case "master":
         s3BasemapUrlList = "Basemaptest-prod.txt"
         rbtcloudRootDir = "https://omar.${domainName}"
-        break
-    case "blue":
-        s3BasemapUrlList = "Basemaptest-prod.txt"
-        break
-    case "green":
-        s3BasemapUrlList = "Basemaptest-prod.txt"
-        break
-    case "rel":
-        s3BasemapUrlList = "Basemaptest-rel.txt"
         break
     case "dev":
         s3BasemapUrlList = "Basemaptest-dev.txt"
-        //rbtcloudRootDir = "https://omar-${targetDeployment}.${domainName}"
-        rbtcloudRootDir = "https://omar.${domainName}"
+        rbtcloudRootDir = "https://omar-${targetDeployment}.${domainName}"
         break
     default:
         println("\nBad TARGET_DEPLOYMENT provided: <${targetDeployment}>. Defaulting to dev.")
