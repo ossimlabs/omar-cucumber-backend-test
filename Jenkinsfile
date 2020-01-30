@@ -1,71 +1,89 @@
 properties([
-    parameters ([
-        string(name: 'BUILD_NODE', defaultValue: 'omar-build', description: 'The build node to run on'),
-        booleanParam(name: 'CLEAN_WORKSPACE', defaultValue: true, description: 'Clean the workspace at the end of the run'),
-    ]),
-    pipelineTriggers([
-            [$class: "GitHubPushTrigger"]
-    ]),
-    [$class: 'GithubProjectProperty', displayName: '', projectUrlStr: 'https://github.com/ossimlabs/omar-cucumber-backend-test'],
-    buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '3', daysToKeepStr: '', numToKeepStr: '20')),
-    disableConcurrentBuilds()
+        parameters([
+                string(name: 'BUILD_NODE', defaultValue: 'omar-build', description: 'The build node to run on'),
+                booleanParam(name: 'CLEAN_WORKSPACE', defaultValue: true, description: 'Clean the workspace at the end of the run'),
+        ]),
+        pipelineTriggers([
+                [$class: "GitHubPushTrigger"]
+        ]),
+        [$class: 'GithubProjectProperty', displayName: '', projectUrlStr: 'https://github.com/ossimlabs/omar-cucumber-backend-test'],
+        buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '3', daysToKeepStr: '', numToKeepStr: '20')),
+        disableConcurrentBuilds()
 ])
 
 timeout(time: 30, unit: 'MINUTES') {
-node("${BUILD_NODE}"){
+    node("${BUILD_NODE}") {
 
-    stage("Checkout branch $BRANCH_NAME")
-    {
-        checkout(scm)
-    }
-
-    stage("Load Variables")
-    {
-        withCredentials([string(credentialsId: 'o2-artifact-project', variable: 'o2ArtifactProject')]) {
-            step ([$class: "CopyArtifact",
-                projectName: o2ArtifactProject,
-                filter: "common-variables.groovy",
-                flatten: true])
+        stage("Checkout branch $BRANCH_NAME") {
+            checkout(scm)
         }
-        load "common-variables.groovy"
-    }
 
-    withCredentials([
-                       [$class: 'UsernamePasswordMultiBinding',
-                       credentialsId: 'curlCredentials',
-                       usernameVariable: 'ORG_GRADLE_PROJECT_cUname',
-                       passwordVariable: 'ORG_GRADLE_PROJECT_cPword'],
-                       [$class: 'UsernamePasswordMultiBinding',
-                       credentialsId: 'dockerCredentials',
-                       usernameVariable: 'ORG_GRADLE_PROJECT_dockerRegistryUsername',
-                       passwordVariable: 'ORG_GRADLE_PROJECT_dockerRegistryPassword']
-                    ])
-    {
-        stage ("Publish Docker App")
-        {
-            withCredentials([])
-            {
+        stage("Load Variables") {
+            withCredentials([string(credentialsId: 'o2-artifact-project', variable: 'o2ArtifactProject')]) {
+                step([$class     : "CopyArtifact",
+                      projectName: o2ArtifactProject,
+                      filter     : "common-variables.groovy",
+                      flatten    : true])
+            }
+            load "common-variables.groovy"
+        }
+
+        try {
+            stage("Run Test") {
                 sh """
-                   export CUCUMBER_CONFIG_LOCATION="cucumber-config-backend.groovy"
-                   export DISPLAY=":1" 
-                   docker login $DOCKER_REGISTRY_URL \
-                    --username=$ORG_GRADLE_PROJECT_dockerRegistryUsername \
-                    --password=$ORG_GRADLE_PROJECT_dockerRegistryPassword
-                   gradle pushDockerImage \
-                       -PossimMavenProxy=${OSSIM_MAVEN_PROXY} \
-                       -PbuildVersion=${dockerTagSuffixOrEmpty()}
+                    export DISPLAY=":1"
+                    ./gradlew run
                 """
+            }
+        } finally {
+            stage("Publish Report") {
+                step([$class             : 'CucumberReportPublisher',
+                      buildStatus        : 'FAILURE',
+                      fileExcludePattern : '',
+                      fileIncludePattern : '**/backend.json',
+                      ignoreFailedTests  : false,
+                      jenkinsBasePath    : '',
+                      jsonReportDirectory: "src/main/groovy/omar/webapp/reports/json",
+                      parallelTesting    : false,
+                      pendingFails       : false,
+                      skippedFails       : false,
+                      undefinedFails     : false])
+            }
+
+            withCredentials([
+                    [$class          : 'UsernamePasswordMultiBinding',
+                     credentialsId   : 'curlCredentials',
+                     usernameVariable: 'ORG_GRADLE_PROJECT_cUname',
+                     passwordVariable: 'ORG_GRADLE_PROJECT_cPword'],
+                    [$class          : 'UsernamePasswordMultiBinding',
+                     credentialsId   : 'dockerCredentials',
+                     usernameVariable: 'ORG_GRADLE_PROJECT_dockerRegistryUsername',
+                     passwordVariable: 'ORG_GRADLE_PROJECT_dockerRegistryPassword']
+            ]) {
+                stage("Publish Docker App") {
+                    withCredentials([]) {
+                        sh """
+                           export CUCUMBER_CONFIG_LOCATION="cucumber-config-backend.groovy"
+                           export DISPLAY=":1"
+                           docker login $DOCKER_REGISTRY_URL \
+                            --username=$ORG_GRADLE_PROJECT_dockerRegistryUsername \
+                            --password=$ORG_GRADLE_PROJECT_dockerRegistryPassword
+                           ./gradlew pushDockerImage \
+                               -PossimMavenProxy=${OSSIM_MAVEN_PROXY} \
+                               -PbuildVersion=${dockerTagSuffixOrEmpty()}
+                        """
+                    }
+                }
+            }
+
+            stage("Clean Workspace") {
+                if ("${CLEAN_WORKSPACE}" == "true")
+                    step([$class: 'WsCleanup'])
             }
         }
     }
+}
 
-    stage("Clean Workspace") {
-        if ("${CLEAN_WORKSPACE}" == "true")
-        step([$class: 'WsCleanup'])
-    }
-}
-}
-    
 /**
  * Returns the docker image tag suffix, including the colon, or an empty string.
  *
