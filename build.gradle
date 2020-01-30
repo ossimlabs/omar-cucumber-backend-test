@@ -19,8 +19,7 @@ configurations {
     }
 }
 
-if(project.hasProperty("runTags"))
-{
+if (project.hasProperty("runTags")) {
     tags = Eval.me runTags
 }
 
@@ -46,7 +45,7 @@ dependencies {
     compile "org.apache.tomcat:tomcat-jasper:8.5.23"
     compile "org.apache.tomcat:tomcat-jasper-el:8.5.23"
     compile "org.apache.tomcat:tomcat-jsp-api:8.5.23"
-    compile("org.geoscript:geoscript-groovy:1.7.0"){
+    compile("org.geoscript:geoscript-groovy:1.7.0") {
         exclude module: "ehcache"
         exclude module: "slf4j-log4j12"
         exclude module: "xml-apis"
@@ -54,7 +53,7 @@ dependencies {
         exclude module: "gt-jdbc-spatialite"
     }
 
-    cucumberRuntime files( "${jar.archivePath}" )
+    cucumberRuntime files("${jar.archivePath}")
 }
 
 // Define the main class for the application
@@ -71,12 +70,10 @@ shadowJar {
 }
 
 run {
-    if (multi == "true")
-    {
+    if (multi == "true") {
         environment 'multi', 'true'
     }
-    if (runEnvironment == "local")
-    {
+    if (runEnvironment == "local") {
         environment 'runEnv', 'local'
     } else {
         environment 'runEnv', ''
@@ -100,7 +97,7 @@ task createDockerfile(type: Dockerfile) {
     environmentVariable("CURL_USER_NAME", "${cUname}")
     environmentVariable("CURL_PASSWORD", "${cPword}")
     runCommand('useradd -u 1001 -r -g 0 --create-home -d /home/omar -s /sbin/nologin -c \'Default Application User\' omar')
-    environmentVariable("HOME","/home/omar")
+    environmentVariable("HOME", "/home/omar")
     runCommand('mkdir /home/omar/build')
     runCommand('mkdir /home/omar/build/classes')
     runCommand('mkdir /home/omar/src')
