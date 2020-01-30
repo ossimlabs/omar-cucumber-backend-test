@@ -143,29 +143,3 @@ task pushDockerImage(type: DockerPushImage) {
     imageName.set("${dockerRegistryUrl}/${project.name}".toString())
     tag.set("${buildVersion}".toString())
 }
-
-task backend() {
-    dependsOn assemble
-    doLast {
-        javaexec {
-            main = "cucumber.api.cli.Main"
-            classpath = configurations.cucumberRuntime
-            if(System.env?.JVM_ARGS){
-                println System.env?.JVM_ARGS
-                jvmArgs = System.env.JVM_ARGS.split(" ").collect(){it.toString()}
-            }
-            args = [
-                    "--tags",
-                    "@image_space, @mensa_service, @wfs_image_search, @wms_ortho, @web_coverage_service, @map_tile_service, @omar_geoscript, @o2_basemap, @download_service, @superoverlay_service",
-                    "--tags",
-                    "~@C2S",
-                    '--plugin', 'json:src/main/groovy/omar/webapp/reports/json/backend.json',
-                    '--glue', 'src/main',
-                    'src/cucumber/resources']
-
-        }
-    }
-}
-
-//pretty output.
-build.dependsOn backend
