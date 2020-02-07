@@ -26,7 +26,7 @@ def wfsServer = config.wfsServerProperty
 def s3BucketUrl = config.s3BucketUrl
 
 Given(~/^that the download service is running$/) { ->
-    def healthText = new URL("${downloadService}/health").text
+    def healthText = new URL("${downloadService}/actuator/health").text
     def healthJson = new JsonSlurper().parseText(healthText)
     assert healthJson.status == "UP"
 }
