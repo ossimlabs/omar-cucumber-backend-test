@@ -34,7 +34,7 @@ Given(~/^image (.*) has been staged in the system$/) {
 }
 
 Given(~/^that the WFS service is available$/) { ->
-    def url = new URL("${wfsUrl}/health")
+    def url = new URL("${wfsUrl}/actuator/health")
     def text = url.getText()
     def json = new JsonSlurper().parseText(text)
 
