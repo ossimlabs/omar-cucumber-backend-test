@@ -65,10 +65,6 @@ When(~/^a call is made to ImageSpace for a (.*) single tile overview of the imag
 When(~/^a call is made to ImageSpace with a time limit of (\d+) to get a (.*) thumbnail of the image (.*)$/) {
     Integer timeLimitInMillis, String imageType, String image ->
 
-	println "timeLimitInMillis: ${ timeLimitInMillis }"
-	println "imageType: ${ imageType }"
-	println "image: ${ image }"
-
     TestImageInfo imageInfo = new TestImageInfo()
     String imageId = imageInfo.getImageInfo(image,imageData).image_id
     
