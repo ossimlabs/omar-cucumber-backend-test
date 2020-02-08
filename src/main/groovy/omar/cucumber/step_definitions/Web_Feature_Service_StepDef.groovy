@@ -34,7 +34,7 @@ Given(~/^image (.*) has been staged in the system$/) {
 }
 
 Given(~/^that the WFS service is available$/) { ->
-    def url = new URL("${wfsUrl}/health")
+    def url = new URL("${wfsUrl}/actuator/health")
     def text = url.getText()
     def json = new JsonSlurper().parseText(text)
 
@@ -193,5 +193,6 @@ When(~/^WFS GetCapabilities call is made$/) { ->
 
 When(~/^a WFS post to omar-oldmar with a filter in xml format is made$/){->
     wfsCall = new WFSCall();
+	println config.properties
     wfsCall.getFeaturePost("${omarOldmarProxy}/wfs".toString(), config.wfsPostString)
 }

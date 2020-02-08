@@ -21,7 +21,7 @@ def area
 def distance
 
 Then(~/^the area of that polygon is returned$/) { ->
-    assert area == 73694.98382206976
+    assert area == 73694.98382222361
 }
 
 Then(~/^the distance between those two points is returned$/) { ->
@@ -29,7 +29,7 @@ Then(~/^the distance between those two points is returned$/) { ->
 }
 
 Then(~/^the path distance between those four points is returned$/) { ->
-    assert distance == 739.5000363888523
+    assert distance == 739.5000363892
 }
 
 When(~/^the mensuration service is called with two points on the image (.*)$/) { String image ->
