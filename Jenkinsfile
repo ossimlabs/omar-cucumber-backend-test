@@ -89,22 +89,38 @@ timeout(time: 30, unit: 'MINUTES') {
                      usernameVariable: 'ORG_GRADLE_PROJECT_dockerRegistryUsername',
                      passwordVariable: 'ORG_GRADLE_PROJECT_dockerRegistryPassword']
             ]) {
-                stage("Publish Docker App") {
+                stage ("Publish Nexus"){	
                     container('builder'){
-                    withCredentials([]) {
+                        withCredentials([[$class: 'UsernamePasswordMultiBinding',
+                                        credentialsId: 'nexusCredentials',
+                                        usernameVariable: 'MAVEN_REPO_USERNAME',
+                                        passwordVariable: 'MAVEN_REPO_PASSWORD']])
+                        {
+                            sh """
+                            ./gradlew publish \
+                                -PossimMavenProxy=${MAVEN_DOWNLOAD_URL}
+                            """
+                        }
+                        }
+                    }
+                    stage('Docker build') {
+                    container('docker') {
+                        withDockerRegistry(credentialsId: 'dockerCredentials', url: "https://${DOCKER_REGISTRY_DOWNLOAD_URL}") {  //TODO
                         sh """
-                           export CUCUMBER_CONFIG_LOCATION="cucumber-config-backend.groovy"
-                           export DISPLAY=":1"
-                           docker login $DOCKER_REGISTRY_PUBLIC_UPLOAD_URL \
-                            --username=$ORG_GRADLE_PROJECT_dockerRegistryUsername \
-                            --password=$ORG_GRADLE_PROJECT_dockerRegistryPassword
-                           ./gradlew pushDockerImage \
-                               -PossimMavenProxy=${MAVEN_DOWNLOAD_URL} \
-                               -PbuildVersion=${dockerTagSuffixOrEmpty()}
+                            docker build -t "${DOCKER_REGISTRY_PUBLIC_UPLOAD_URL}"/omar-mensa-app:${BRANCH_NAME} ./docker
                         """
+                        }
+                    }
+                    stage('Docker push'){
+                        container('docker') {
+                        withDockerRegistry(credentialsId: 'dockerCredentials', url: "https://${DOCKER_REGISTRY_PUBLIC_UPLOAD_URL}") {
+                        sh """
+                            docker push "${DOCKER_REGISTRY_PUBLIC_UPLOAD_URL}"/omar-mensa-app:${BRANCH_NAME}
+                        """
+                        }
+                        }
                     }
                     }
-                }
             }
 
             stage("Clean Workspace") {
