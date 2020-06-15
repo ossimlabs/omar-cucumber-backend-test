@@ -11,8 +11,32 @@ properties([
         disableConcurrentBuilds()
 ])
 
+podTemplate(
+  containers: [
+    containerTemplate(
+      name: 'docker',
+      image: 'docker:latest',
+      ttyEnabled: true,
+      command: 'cat',
+      privileged: true
+    ),
+    containerTemplate(
+      image: "${DOCKER_REGISTRY_DOWNLOAD_URL}/omar-builder:1.0.0",
+      name: 'builder',
+      command: 'cat',
+      ttyEnabled: true
+    )
+  ],
+  volumes: [
+    hostPathVolume(
+      hostPath: '/var/run/docker.sock',
+      mountPath: '/var/run/docker.sock'
+    ),
+  ]
+)
+
 timeout(time: 30, unit: 'MINUTES') {
-    node("${BUILD_NODE}") {
+    node(POD_LABEL) {
 
         stage("Checkout branch $BRANCH_NAME") {
             checkout(scm)
@@ -29,14 +53,17 @@ timeout(time: 30, unit: 'MINUTES') {
         }
 
         try {
-            stage("Run Test") {
-                sh """
-                    export DISPLAY=":1"
-                    ./gradlew run
-                """
+            container('builder'){
+                stage("Run Test") {
+                    sh """
+                        export DISPLAY=":1"
+                        ./gradlew run
+                    """
+                }
             }
         } finally {
             stage("Publish Report") {
+                container('builder'){
                 step([$class             : 'CucumberReportPublisher',
                       buildStatus        : 'FAILURE',
                       fileExcludePattern : '',
@@ -48,6 +75,7 @@ timeout(time: 30, unit: 'MINUTES') {
                       pendingFails       : false,
                       skippedFails       : false,
                       undefinedFails     : false])
+                }
             }
 
             withCredentials([
@@ -61,6 +89,7 @@ timeout(time: 30, unit: 'MINUTES') {
                      passwordVariable: 'ORG_GRADLE_PROJECT_dockerRegistryPassword']
             ]) {
                 stage("Publish Docker App") {
+                    container('builder'){
                     withCredentials([]) {
                         sh """
                            export CUCUMBER_CONFIG_LOCATION="cucumber-config-backend.groovy"
@@ -72,6 +101,7 @@ timeout(time: 30, unit: 'MINUTES') {
                                -PossimMavenProxy=${MAVEN_DOWNLOAD_URL} \
                                -PbuildVersion=${dockerTagSuffixOrEmpty()}
                         """
+                    }
                     }
                 }
             }
