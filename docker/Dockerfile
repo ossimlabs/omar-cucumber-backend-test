@@ -1,18 +1,18 @@
 FROM centos:7
 ENV HOME "/home/omar"
 
-RUN yum -y update \
-    yum -y install java-1.8.0-openjdk \
-    useradd -u 1001 -r -g 0 --create-home -d /home/omar -s /sbin/nologin -c \'Default Application User\' omar \
-    mkdir /home/omar/build \
-    mkdir /home/omar/build/classes \
-    mkdir /home/omar/src \
-    mkdir /home/omar/src/main
-COPY main/ /home/omar/src/mainc\
-    groovy /home/omar/build/classes \
-    omar-cucumber-backend-test-latest.jar home/omar/ \
-    chown 1001:0 -R /home/omar \
-    chmod -R 777 /home/omar/
+RUN yum -y update 
+RUN yum -y install java-1.8.0-openjdk
+RUN useradd -u 1001 -r -g 0 --create-home -d /home/omar -s /sbin/nologin -c \'Default Application User\' omar 
+RUN mkdir /home/omar/build 
+RUN mkdir /home/omar/build/classes 
+RUN mkdir /home/omar/src 
+RUN mkdir /home/omar/src/main
+COPY main/ /home/omar/src/mainc
+COPY groovy /home/omar/build/classes 
+COPY omar-cucumber-backend-test-latest.jar home/omar/ 
+COPY chown 1001:0 -R /home/omar/
+COPY chmod -R 777 /home/omar/
 EXPOSE 8080
 USER 1001
 VOLUME /conf

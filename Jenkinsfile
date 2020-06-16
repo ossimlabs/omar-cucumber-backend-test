@@ -89,20 +89,6 @@ timeout(time: 30, unit: 'MINUTES') {
                      usernameVariable: 'ORG_GRADLE_PROJECT_dockerRegistryUsername',
                      passwordVariable: 'ORG_GRADLE_PROJECT_dockerRegistryPassword']
             ]) {
-                stage ("Publish Nexus"){	
-                    container('builder'){
-                        withCredentials([[$class: 'UsernamePasswordMultiBinding',
-                                        credentialsId: 'nexusCredentials',
-                                        usernameVariable: 'MAVEN_REPO_USERNAME',
-                                        passwordVariable: 'MAVEN_REPO_PASSWORD']])
-                        {
-                            sh """
-                            ./gradlew publish \
-                                -PossimMavenProxy=${MAVEN_DOWNLOAD_URL}
-                            """
-                        }
-                        }
-                    }
                     stage('Docker build') {
                     container('docker') {
                         withDockerRegistry(credentialsId: 'dockerCredentials', url: "https://${DOCKER_REGISTRY_DOWNLOAD_URL}") {  //TODO
