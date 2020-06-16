@@ -3,7 +3,7 @@ ENV HOME "/home/omar"
 
 RUN yum -y update 
 RUN yum -y install java-1.8.0-openjdk
-RUN useradd -u 1001 -r -g 0 --create-home -d /home/omar -s /sbin/nologin -c \'Default Application User\' omar 
+RUN useradd -u 1001 -r -g 0 --create-home -d /home/omar -s /sbin/nologin -c Default Application User omar 
 RUN mkdir /home/omar/build 
 RUN mkdir /home/omar/build/classes 
 RUN mkdir /home/omar/src 
