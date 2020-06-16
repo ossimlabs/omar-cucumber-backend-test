@@ -1,9 +1,9 @@
 FROM centos:7
 ENV HOME "/home/omar"
-
+RUN adduser -D -h $HOME -s /sbin/nologin -u 1001 omar
 RUN yum -y update 
 RUN yum -y install java-1.8.0-openjdk
-RUN useradd -u 1001 -r -g 0 --create-home -d /home/omar -s /sbin/nologin -c Default Application User omar 
+
 RUN mkdir /home/omar/build 
 RUN mkdir /home/omar/build/classes 
 RUN mkdir /home/omar/src 
