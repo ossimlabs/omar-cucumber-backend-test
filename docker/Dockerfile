@@ -4,7 +4,7 @@ RUN adduser -D -h $HOME -s /sbin/nologin -u 1001 omar
 RUN yum -y update 
 RUN yum -y install java-1.8.0-openjdk
 
-RUN mkdir /home/omar/build 
+RUN mkdir -r /home/omar/build 
 RUN mkdir /home/omar/build/classes 
 RUN mkdir /home/omar/src 
 RUN mkdir /home/omar/src/main
