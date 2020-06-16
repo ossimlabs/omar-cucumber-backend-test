@@ -35,7 +35,7 @@ podTemplate(
     ),
   ]
 )
-
+{
 timeout(time: 30, unit: 'MINUTES') {
     node(POD_LABEL) {
 
@@ -130,7 +130,7 @@ timeout(time: 30, unit: 'MINUTES') {
         }
     }
 }
-
+}
 /**
  * Returns the docker image tag suffix, including the colon, or an empty string.
  *
