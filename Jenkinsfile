@@ -65,11 +65,11 @@ timeout(time: 30, unit: 'MINUTES') {
                         sh """
                            export CUCUMBER_CONFIG_LOCATION="cucumber-config-backend.groovy"
                            export DISPLAY=":1"
-                           docker login $DOCKER_REGISTRY_URL \
+                           docker login $DOCKER_REGISTRY_PUBLIC_UPLOAD_URL \
                             --username=$ORG_GRADLE_PROJECT_dockerRegistryUsername \
                             --password=$ORG_GRADLE_PROJECT_dockerRegistryPassword
                            ./gradlew pushDockerImage \
-                               -PossimMavenProxy=${OSSIM_MAVEN_PROXY} \
+                               -PossimMavenProxy=${MAVEN_DOWNLOAD_URL} \
                                -PbuildVersion=${dockerTagSuffixOrEmpty()}
                         """
                     }
