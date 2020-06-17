@@ -4,11 +4,12 @@ RUN adduser -D -h $HOME -s /sbin/nologin -u 1001 omar
 RUN yum -y update 
 RUN yum -y install java-1.8.0-openjdk
 
+RUN ls -lR
 RUN mkdir -p /home/omar/build 
 RUN mkdir /home/omar/build/classes 
 RUN mkdir /home/omar/src 
 RUN mkdir /home/omar/src/main
-COPY */main /home/omar/src/mainc/
+COPY /home/omar/src/main /home/omar/src/mainc/
 COPY /src/main/groovy /home/omar/build/classes 
 COPY omar-cucumber-backend-test-latest.jar home/omar/ 
 COPY chown 1001:0 -R /home/omar/
