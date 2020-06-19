@@ -9,8 +9,9 @@ RUN mkdir -p /home/omar/build
 RUN mkdir /home/omar/build/classes 
 RUN mkdir /home/omar/src 
 RUN mkdir /home/omar/src/main
-COPY /home/omar/src/main /home/omar/src/mainc/ 
-COPY /home/src/main/groovy /home/omar/build/classes 
+
+COPY main/ /home/omar/src/main  
+COPY groovy /home/omar/build/classes
 COPY omar-cucumber-backend-test-latest.jar home/omar/ 
 COPY chown 1001:0 -R /home/omar/
 COPY chmod -R 777 /home/omar/
