@@ -12,8 +12,8 @@ RUN mkdir /home/omar/src/main
 COPY /src/main/ /home/omar/src/main  
 COPY /build/classes/groovy /home/omar/build/classes
 COPY /build/libs/omar-cucumber-backend-test-latest.jar home/omar/ 
-COPY chown 1001:0 -R /home/omar/
-COPY chmod -R 777 /home/omar/
+RUN chown 1001:0 -R /home/omar/
+RUN chmod -R 777 /home/omar/
 EXPOSE 8080
 USER 1001
 VOLUME /conf
