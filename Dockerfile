@@ -10,9 +10,9 @@ RUN mkdir /home/omar/build/classes
 RUN mkdir /home/omar/src 
 RUN mkdir /home/omar/src/main
 
-COPY main/ /home/omar/src/main  
-COPY groovy /home/omar/build/classes
-COPY omar-cucumber-backend-test-latest.jar home/omar/ 
+COPY /src/main/ /home/omar/src/main  
+COPY /build/classes/groovy /home/omar/build/classes
+COPY /build/libs/omar-cucumber-backend-test-latest.jar home/omar/ 
 COPY chown 1001:0 -R /home/omar/
 COPY chmod -R 777 /home/omar/
 EXPOSE 8080
