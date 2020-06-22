@@ -94,7 +94,7 @@ timeout(time: 30, unit: 'MINUTES') {
                     container('docker') {
                         withDockerRegistry(credentialsId: 'dockerCredentials', url: "https://${DOCKER_REGISTRY_DOWNLOAD_URL}") {  //TODO
                         sh """
-                            docker build --network=host -t "${DOCKER_REGISTRY_PUBLIC_UPLOAD_URL}"/omar-mensa-app:${BRANCH_NAME} .
+                            docker build --network=host -t "${DOCKER_REGISTRY_PUBLIC_UPLOAD_URL}"/omar-cucumber-backend-test:${BRANCH_NAME} .
                         """
                         }
                     }
@@ -102,7 +102,7 @@ timeout(time: 30, unit: 'MINUTES') {
                         container('docker') {
                         withDockerRegistry(credentialsId: 'dockerCredentials', url: "https://${DOCKER_REGISTRY_PUBLIC_UPLOAD_URL}") {
                         sh """
-                            docker push "${DOCKER_REGISTRY_PUBLIC_UPLOAD_URL}"/omar-mensa-app:${BRANCH_NAME}
+                            docker push "${DOCKER_REGISTRY_PUBLIC_UPLOAD_URL}"/omar-cucumber-backend-test:${BRANCH_NAME}
                         """
                         }
                         }
