@@ -58,6 +58,7 @@ timeout(time: 30, unit: 'MINUTES') {
                 stage("Run Test") {
                     sh """
                         export DISPLAY=":1"
+                        ./gradlew run
                         ./gradlew assemble
                     """
                 }
